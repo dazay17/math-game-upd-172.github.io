@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+body {
+    font-family: "Montserrat", sans-serif;
+    max-width: 600px;
+    margin: 50px auto;
+    text-align: center;
+}
+
+.poo-btn {
+    all: unset;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 40px;
+    background: none !important;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.poo-btn:hover {
+    transform: scale(1.2);
+}
+
+.game-container {
+    border: 2px solid #3498db;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+}
+.score {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+.question {
+    font-size: 32px;
+    margin: 20px 0;
+    color: #e74c3c;
+}
+input {
+    padding: 10px;
+    font-size: 20px;
+    width: 100px;
+    text-align: center;
+    margin: 10px;
+}
+button {
+    padding: 12px 24px;
+    font-size: 18px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+button:hover {
+    background-color: #2980b9;
+}
+.result {
+    font-size: 20px;
+    margin: 15px 0;
+    font-weight: bold;
+}
+.correct { color: #27ae60; }
+.incorrect { color: #e74c3c; }
+
+/* Стили для таймера */
+.timer-container {
+    margin: 20px 0;
+}
+.timer-circle {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    position: relative;
+
+}
+.timer-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+.timer-background {
+    fill: none;
+    stroke: #ecf0f1;
+    stroke-width: 8;
+}
+.timer-progress {
+    fill: none;
+    stroke: #3498db;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.1s linear;
+}
+.timer-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+.timer-warning { stroke: #e74c3c; }
+.timer-critical { stroke: #c0392b; animation: pulse-timer 0.5s infinite alternate; }
+
+@keyframes pulse-timer {
+    from { opacity: 1; }
+    to { opacity: 0.5; }
+}
+
+.difficulty-buttons {
+    margin: 15px 0;
+}
+.difficulty-btn {
+    padding: 8px 16px;
+    margin: 0 5px;
+    border: 2px solid #3498db;
+    background: white;
+    color: #3498db;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.difficulty-btn.active {
+    background: #3498db;
+    color: white;
+}
+.difficulty-btn:hover {
+    background: #2980b9;
+    color: white;
+}

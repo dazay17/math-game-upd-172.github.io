@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Математическая игра</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+    /* Добавляем стили для отображения уровня */
+
+    small {
+        opacity: 0.6;
+    }
+    .level-display {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin: 15px 0;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        display: inline-block;
+        animation: pulse-level 2s infinite;
+    }
+
+    .level-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 10px 0;
+    }
+
+    .level-progress {
+        width: 200px;
+        height: 8px;
+        background: #ecf0f1;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 0 10px;
+    }
+
+    .level-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #2ecc71, #27ae60);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+
+    .level-name {
+        font-weight: bold;
+        color: #3498db;
+        font-size: 1.2rem;
+    }
+
+    @keyframes pulse-level {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+
+    .level-up {
+        animation: levelUp 0.5s ease;
+    }
+
+    @keyframes levelUp {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    /* Модальные окна */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        animation: slideUp 0.4s ease;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .modal-title {
+        color: #3498db;
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+
+    .mode-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .mode-btn {
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        text-align: center;
+    }
+
+    .mode-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    }
+
+    .mode-btn:active {
+        transform: translateY(0);
+    }
+
+    .close-btn {
+        padding: 10px 20px;
+        background: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .close-btn:hover {
+        background: #c0392b;
+    }
+
+    /* Анимации для модальных окон */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from { 
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Стили для тематической практики */
+    .theme-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin: 20px 0;
+    }
+
+    .theme-btn {
+        padding: 12px;
+        background: #f8f9fa;
+        color: #495057;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .theme-btn:hover {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+        transform: translateY(-2px);
+    }
+
+    .back-btn {
+        background: #95a5a6;
+        margin-top: 15px;
+    }
+
+    .back-btn:hover {
+        background: #7f8c8d;
+    }
+
+    .difficulty-buttons {
+        margin: 15px 0;
+    }
+    
+    .difficulty-btn {
+        padding: 8px 16px;
+        margin: 0 5px;
+        border: 2px solid #3498db;
+        background: white;
+        color: #3498db;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .difficulty-btn.active {
+        background: #3498db;
+        color: white;
+    }
+    
+    .difficulty-btn:hover {
+        background: #2980b9;
+        color: white;
+    }
+
+    /* Стили для магазина */
+    .shop-category-btn {
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+        border: 2px solid #ecf0f1;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+        text-align: center;
+        margin: 10px 0;
+    }
+
+    .shop-category-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+        background: linear-gradient(135deg, #3498db, #2980b9);
+    }
+
+
+    .shop-subcategory-title {
+        color: #2c3e50;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .item-description {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin: 5px 0;
+    }
+
+    .premium-header {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .feature-list {
+        text-align: left;
+        margin: 15px 0;
+    }
+
+    .feature-item {
+        margin: 8px 0;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .feature-item:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #27ae60;
+        font-weight: bold;
+    }
+
+    .shop-items {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .shop-item {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .shop-item:hover {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+        transform: translateY(-2px);
+    }
+
+    .shop-item.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .shop-item.disabled:hover {
+        background: #f8f9fa;
+        color: #495057;
+        border-color: #e9ecef;
+        transform: none;
+    }
+
+    .price-tag {
+        display: inline-block;
+        background: #f39c12;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+
+    /* Стили для статистики тематической практики */
+    .practice-stats {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 15px 0;
+        border-left: 4px solid #3498db;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        text-align: center;
+    }
+
+    .stat-item {
+        padding: 10px;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #3498db;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .mastery-message {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        margin: 10px 0;
+        animation: pulse-level 1s infinite;
+    }
+
+    .stop-btn {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    .stop-btn:hover {
+        background: #c0392b;
+    }
+
+    .buttons-container {
+        display: flex;  
+        justify-content: center;
+        gap: 10px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎯 Математическая игра</h1>
+        <h2>от кабана</h2>
+        
+        <!-- Кнопка в левом верхнем углу -->
+        <button class="poo-btn" title="Вернуться в главное меню" onclick="backToMainMenu()">
+            <i class="fa-solid fa-poo" style="color: #52abff;"></i>
+        </button>
+        <!-- Блок информации об уровне -->
+        <div class="level-info">
+            <div class="level-display">
+                Уровень: <span id="level">1</span>
+            </div>
+            <div class="level-progress">
+                <div class="level-progress-bar" id="level-progress-bar"></div>
+            </div>
+            <div class="level-name" id="level-name">Новичок</div>
+        </div>
+
+        <div class="difficulty-buttons">
+            <button class="difficulty-btn active" onclick="openLearningModal()">Обучение</button>
+            <button class="difficulty-btn" onclick="openGameModesModal()">Игровые режимы</button>
+            <button class="difficulty-btn" onclick="openShopModal()">Магазин</button>
+        </div>
+
+        <div class="score">Счет: <span id="score">0</span></div>
+
+        <div class="timer-container">
+            <div class="timer-circle">
+                <svg class="timer-svg" viewBox="0 0 100 100">
+                    <circle class="timer-background" cx="50" cy="50" r="45"></circle>
+                    <circle class="timer-progress" cx="50" cy="50" r="45" 
+                            stroke-dasharray="283" stroke-dashoffset="30"></circle>
+                </svg>
+                <div class="timer-text" id="timer-text">30</div>
+            </div>
+        </div>
+
+        <div class="question" id="question"></div>  
+        <div class="buttons-container">
+            <input type="number" id="answer" placeholder="Ответ"> 
+            <button onclick="checkAnswer()">Проверить</button>
+            <button onclick="newGame()">Новая игра</button>
+            <button id="stopPracticeBtn" class="stop-btn" style="display: none;" onclick="stopPractice()">Стоп</button>
+        </div>
+        <div class="result" id="result"></div>
+
+                <!-- Статистика тематической практики -->
+        <div class="practice-stats" id="practiceStats" style="display: none;">
+            <h3>📊 Статистика практики</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="correctAnswers">0</div>
+                    <div class="stat-label">Правильно</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="wrongAnswers">0</div>
+                    <div class="stat-label">Ошибок</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">Точность</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="streak">0</div>
+                    <div class="stat-label">Серия</div>
+                </div>
+            </div>
+            <div id="masteryMessage" class="mastery-message" style="display: none;">
+                🎉 Тема закреплена! Отличный результат!
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- Модальное окно выбора режима обучения -->
+    <div class="modal-overlay" id="learningModal">
+        <div class="modal-content">
+            <h2 class="modal-title">📚 Режимы обучения</h2>
+            <div class="mode-buttons">
+                <button class="mode-btn" onclick="openTheoryMode()">
+                    📖 Теория (пошаговые объяснения)
+                </button>
+                <button class="mode-btn" onclick="openThematicPractice()">
+                    🎯 Тематическая практика
+                </button>
+                <button class="mode-btn" onclick="openRandomPractice()">
+                    🎲 Случайная практика
+                </button>
+            </div>
+            <button class="close-btn" onclick="closeModal('learningModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно тематической практики -->
+    <div class="modal-overlay" id="thematicModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🎯 Выберите тему</h2>
+            <div class="theme-grid">
+                <button class="theme-btn" onclick="selectTheme('addition')">➕ Сложение/Вычитание</button>
+                <button class="theme-btn" onclick="selectTheme('multiplication')">✖️ Умножение/Деление</button>
+                <button class="theme-btn" onclick="selectTheme('percent')">📊 Проценты</button>
+                <button class="theme-btn" onclick="selectTheme('fractions')">½ Дроби</button>
+                <button class="theme-btn" onclick="selectTheme('powers')">🔢 Степени и корни</button>
+                <button class="theme-btn" onclick="selectTheme('equations')">📐 Уравнения</button>
+            </div>
+            <button class="close-btn back-btn" onclick="showModal('learningModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('thematicModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно игровых режимов -->
+    <div class="modal-overlay" id="gameModesModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🎮 Игровые режимы</h2>
+            
+            <div class="mode-buttons">
+                <button class="mode-btn" onclick="selectGameMode('sprint')">
+                    ⚡ Спринт<br>
+                    <small>10 задач на время (3-5 секунд на задачу)</small>
+                </button>
+
+                <button class="mode-btn" onclick="selectGameMode('marathon')">
+                    🏃‍♂️ Марафон<br>
+                    <small>Бесконечно до первой ошибки с нарастающей сложностью</small>
+                </button>
+
+                <button class="mode-btn" onclick="selectGameMode('accuracy')">
+                    🎯 Точность<br>
+                    <small>-10 очков за ошибку, +5 за серию из 5 правильных ответов</small>
+                </button>
+
+                <button class="mode-btn" onclick="selectGameMode('exam')">
+                    📝 Экзамен<br>
+                    <small>20 задач разной сложности на время</small>
+                </button>
+            </div>
+
+            <button class="close-btn" onclick="closeModal('gameModesModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно главного меню магазина -->
+    <div class="modal-overlay" id="shopMainModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🛒 Магазин</h2>
+            
+            <div class="mode-buttons">
+                <button class="shop-category-btn" onclick="openBoostersModal()">
+                    ⚡ Бустеры и улучшения
+                </button>
+                
+                <button class="shop-category-btn" onclick="openVisualModal()">
+                    🎨 Визуальные улучшения
+                </button>
+                
+                <button class="shop-category-btn" onclick="openPremiumModal()">
+                    💎 Премиум раздел
+                </button>
+            </div>
+
+            <button class="close-btn" onclick="closeModal('shopMainModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно бустеров (подкатегории) -->
+    <div class="modal-overlay" id="boostersModal">
+        <div class="modal-content">
+            <h2 class="modal-title">⚡ Бустеры и улучшения</h2>
+            
+            <div class="mode-buttons">
+                <button class="shop-category-btn" onclick="openTimeBoostersModal()">
+                    ⏰ Бустеры времени
+                </button>
+                
+                <button class="shop-category-btn" onclick="openPointsBoostersModal()">
+                    ⭐ Бонусы очков
+                </button>
+                
+                <button class="shop-category-btn" onclick="openHintsBoostersModal()">
+                    💡 Подсказки
+                </button>
+            </div>
+
+            <button class="close-btn back-btn" onclick="showModal('shopMainModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('boostersModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно бустеров времени -->
+    <div class="modal-overlay" id="timeBoostersModal">
+        <div class="modal-content">
+            <h2 class="modal-title">⏰ Бустеры времени</h2>
+            
+            <div class="shop-items">
+                <div class="shop-item" onclick="buyItem('timePlus')">
+                    +10 секунд<br>
+                    <span class="item-description">Добавляет 10 секунд к таймеру</span>
+                    <span class="price-tag">50 очков</span>
+                </div>
+                <div class="shop-item" onclick="buyItem('slowDown')">
+                    Замедление (50% на 15 сек)<br>
+                    <span class="item-description">Таймер движется в 2 раза медленнее</span>
+                    <span class="price-tag">75 очков</span>
+                </div>
+                <div class="shop-item" onclick="buyItem('freeze')">
+                    Заморозка (5 сек)<br>
+                    <span class="item-description">Таймер полностью останавливается</span>
+                    <span class="price-tag">100 очков</span>
+                </div>
+            </div>
+
+            <button class="close-btn back-btn" onclick="showModal('boostersModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('timeBoostersModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно бонусов очков -->
+    <div class="modal-overlay" id="pointsBoostersModal">
+        <div class="modal-content">
+            <h2 class="modal-title">⭐ Бонусы очков</h2>
+            
+            <div class="shop-items">
+                <div class="shop-item" onclick="buyItem('doublePoints')">
+                    ×2 на следующую задачу<br>
+                    <span class="item-description">Удваивает очки за следующий ответ</span>
+                    <span class="price-tag">60 очков</span>
+                </div>
+                <div class="shop-item" onclick="buyItem('triplePoints')">
+                    ×3 на 30 секунд<br>
+                    <span class="item-description">Утраивает очки на 30 секунд</span>
+                    <span class="price-tag">120 очков</span>
+                </div>
+                <div class="shop-item" onclick="buyItem('immunity')">
+                    Иммунитет к штрафам<br>
+                    <span class="item-description">Следующая ошибка не снимает очки</span>
+                    <span class="price-tag">90 очков</span>
+                </div>
+            </div>
+
+            <button class="close-btn back-btn" onclick="showModal('boostersModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('pointsBoostersModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно подсказок -->
+    <div class="modal-overlay" id="hintsBoostersModal">
+        <div class="modal-content">
+            <h2 class="modal-title">💡 Подсказки</h2>
+            
+            <div class="shop-items">
+                <div class="shop-item" onclick="buyItem('rangeHint')">
+                    Диапазон ответа (±5)<br>
+                    <span class="item-description">Показывает диапазон правильного ответа</span>
+                    <span class="price-tag">40 очков</span>
+                </div>
+                <div class="shop-item" onclick="buyItem('operatorHint')">
+                    Показать оператор<br>
+                    <span class="item-description">Подсвечивает правильную операцию</span>
+                    <span class="price-tag">55 очков</span>
+                </div>
+            </div>
+
+            <button class="close-btn back-btn" onclick="showModal('boostersModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('hintsBoostersModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно визуальных улучшений (подкатегории) -->
+    <div class="modal-overlay" id="visualModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🎨 Визуальные улучшения</h2>
+            
+            <div class="mode-buttons">
+                <button class="shop-category-btn" onclick="openThemesModal()">
+                    🎨 Темы интерфейса
+                </button>
+                
+                <button class="shop-category-btn" onclick="openSoundsModal()">
+                    🔊 Звуковые эффекты
+                </button>
+            </div>
+
+            <button class="close-btn back-btn" onclick="showModal('shopMainModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('visualModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно тем интерфейса -->
+    <div class="modal-overlay" id="themesModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🎨 Темы интерфейса</h2>
+            
+            <div class="shop-items">
+                <div class="shop-item" onclick="buyItem('darkTheme')">
+                    Тёмная тема<br>
+                    <span class="item-description">Тёмная тема с синими акцентами</span>
+                    <span class="price-tag">200 очков</span>
+                </div>
+                <div class="shop-item" onclick="buyItem('lightTheme')">
+                    Светлая тема<br>
+                    <span class="item-description">Светлая тема по умолчанию</span>
+                    <span class="price-tag">Бесплатно</span>
+                </div>
+                <div class="shop-item" onclick="buyItem('spaceTheme')">
+                    Космическая<br>
+                    <span class="item-description">Звёзды, планеты, тёмный фон</span>
+                    <span class="price-tag">300 очков</span>
+                </div>
+            </div>
+
+            <button class="close-btn back-btn" onclick="showModal('visualModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('themesModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно звуковых эффектов -->
+    <div class="modal-overlay" id="soundsModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🔊 Звуковые эффекты</h2>
+            
+            <div class="shop-items">
+                <div class="shop-item" onclick="buyItem('soundEffects')">
+                    Звуковые эффекты<br>
+                    <span class="item-description">Звуки правильных/неправильных ответов</span>
+                    <span class="price-tag">150 очков</span>
+                </div>
+                <div class="shop-item" onclick="buyItem('backgroundMusic')">
+                    Фоновая музыка<br>
+                    <span class="item-description">2-3 варианта фоновой музыки</span>
+                    <span class="price-tag">180 очков</span>
+                </div>
+            </div>
+
+            <button class="close-btn back-btn" onclick="showModal('visualModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('soundsModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно премиум раздела -->
+    <div class="modal-overlay" id="premiumModal">
+        <div class="modal-content">
+            <h2 class="modal-title">💎 Премиум раздел</h2>
+            
+            <div class="mode-buttons">
+                <button class="shop-category-btn" onclick="openPremiumStatusModal()">
+                    🏆 Премиум статус
+                </button>
+                
+                <button class="shop-category-btn" onclick="openStarterPacksModal()">
+                    🎁 Стартовые наборы
+                </button>
+            </div>
+
+            <button class="close-btn back-btn" onclick="showModal('shopMainModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('premiumModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно премиум статуса -->
+    <div class="modal-overlay" id="premiumStatusModal">
+        <div class="modal-content">
+            <div class="premium-header">
+                <h2>🏆 Премиум статус</h2>
+                <div class="price-tag" style="font-size: 1.2rem; padding: 8px 16px;">$4.99/месяц</div>
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">Ежедневный случайный бустер</div>
+                <div class="feature-item">Эксклюзивная золотая тема</div>
+                <div class="feature-item">Полное отсутствие рекламы</div>
+                <div class="feature-item">Удвоение очков за достижения</div>
+                <div class="feature-item">Приоритетная поддержка</div>
+            </div>
+
+            <button class="mode-btn" onclick="buyItem('premiumSubscription')">
+                💎 Приобрести премиум
+            </button>
+
+            <button class="close-btn back-btn" onclick="showModal('premiumModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('premiumStatusModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно стартовых наборов -->
+    <div class="modal-overlay" id="starterPacksModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🎁 Стартовые наборы</h2>
+            
+            <div class="shop-items">
+                <div class="shop-item" onclick="buyItem('starterPack')">
+                    <h3>Стартовый набор</h3>
+                    <div class="item-description">
+                        Несколько бустеров для начала игры<br>
+                        +10 сек, ×2 очки, иммунитет
+                    </div>
+                    <span class="price-tag">$4.99</span>
+                </div>
+
+                <div class="shop-item" onclick="buyItem('timePack')">
+                    <h3>Временной набор</h3>
+                    <div class="item-description">
+                        Бустеры времени<br>
+                        Замедление ×2, Заморозка ×3
+                    </div>
+                    <span class="price-tag">$2.99</span>
+                </div>
+
+                <div class="shop-item" onclick="buyItem('pointsPack')">
+                    <h3>Очковый набор</h3>
+                    <div class="item-description">
+                        Бустеры для умножения очков<br>
+                        ×2 очки ×3, ×3 очки ×2
+                    </div>
+                    <span class="price-tag">$3.99</span>
+                </div>
+            </div>
+
+            <button class="close-btn back-btn" onclick="showModal('premiumModal')">← Назад</button>
+            <button class="close-btn" onclick="closeModal('starterPacksModal')">Закрыть</button>
+        </div>
+    </div>
+    <!-- Модальное окно результатов игрового режима -->
+    <div class="modal-overlay" id="gameResultsModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="gameResultsTitle">🎮 Результаты</h2>
+            
+            <div class="stats-grid" id="gameResultsStats">
+                <!-- Сюда будут вставляться статистики -->
+            </div>
+            
+            <div id="gameSpecialMessage" style="margin: 15px 0; padding: 10px; border-radius: 8px; display: none;"></div>
+            
+            <button class="mode-btn" onclick="closeModal('gameResultsModal'); newGame();">
+                🎯 Играть снова
+            </button>
+            
+            <button class="close-btn" onclick="closeModal('gameResultsModal')">
+                Закрыть
+            </button>
+        </div>
+    </div>
+    <script src="index.js">
+    </script>
+</body>
+</html>

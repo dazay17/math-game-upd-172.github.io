@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Логический режим</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+        body {
+            font-family: "Montserrat", sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: #2e7d32;
+        }
+
+        .poo-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 40px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .poo-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;  
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2);
+        }
+
+        h1 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        h2 {
+            color: #4caf50;
+            margin-top: 0;
+            font-weight: normal;
+        }
+
+        .level-display {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            display: inline-block;
+            animation: pulse-level 2s infinite;
+        }
+
+        .score {
+            font-size: 24px;
+            margin: 20px;
+            color: #2e7d32;
+        }
+
+        .matrix-container {
+            font-size: 30px;
+            margin: 20px 0;
+            line-height: 60px;
+            min-height: 180px;
+        }
+
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            min-height: 80px;
+        }
+
+        .option-btn {
+            font-size: 24px;
+            padding: 15px;
+            background: white;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            background: #4caf50;
+            transform: scale(1.1);
+        }
+
+        .result {
+            font-size: 20px;
+            margin: 10px 0;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .correct { color: #27ae60; }
+        .incorrect { color: #e74c3c; }
+
+        .restart-btn {
+            padding: 12px 24px;
+            font-size: 18px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            display: none;
+        }
+        .btn-play {
+            display: flex;
+            justify-content: center;
+        }
+        .restart-btn:hover {
+            background-color: #388e3c;
+        }
+
+        @keyframes pulse-level {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Кнопка в левом верхнем углу -->
+    <button class="poo-btn" title="Вернуться в главное меню" onclick="backToMainMenu()">
+        <i class="fa-solid fa-poo" style="color: #448641;"></i>
+    </button>
+
+    <div class="game-container">
+        <h1>🧠 Логические матрицы</h1>
+        <h2>Найди правильный ответ</h2>
+        
+        <div class="level-display">
+            Задача: <span id="task-number">1</span>/5
+        </div>
+
+        <div class="score">Правильно: <span id="score">0</span></div>
+
+        <div class="matrix-container" id="matrix">
+            <!-- Матрица будет здесь -->
+        </div>
+
+        <div class="options" id="options">
+            <!-- Варианты ответов -->
+        </div>
+        
+        <div class="result" id="result"></div>
+
+        <div class="btn-play"><button class="restart-btn" onclick="restartGame()" id="restartBtn">Играть снова</button></div>
+    </div>
+
+    <script>
+        let currentTask = 0;
+        let score = 0;
+
+        const tasks = [
+            {
+                matrix: [
+                    "🟦 🟦 🟦",
+                    "🟥 🟥 ❓",
+                    "🟩 🟩 🟩"
+                ],
+                options: ["🟦", "🟥", "🟩", "🟨"],
+                correct: 1
+            },
+            {
+                matrix: [
+                    "▲ ▲ ▲",
+                    "▼ ▼ ❓",
+                    "● ● ●"
+                ],
+                options: ["▲", "▼", "●", "◆"],
+                correct: 1
+            },
+            {
+                matrix: [
+                    "🟦 🟥 🟦",
+                    "🟥 🟦 🟥",
+                    "🟦 🟥 ❓"
+                ],
+                options: ["🟦", "🟥", "🟩", "🟨"],
+                correct: 0
+            },
+            {
+                matrix: [
+                    "●   ●●   ●●●",
+                    "●●   ●●●  ❓",
+                    "●●●  ●●●●   ●●●●●"
+                ],
+                options: ["●●●●", "●●●", "●●", "●"],
+                correct: 0
+            },
+            {
+                matrix: [
+                    "◴ ◷ ◶",
+                    "◵ ◴ ❓",
+                    "◷ ◶ ◵"
+                ],
+                options: ["◷", "◴", "◵", "◶"],
+                correct: 0
+            }
+        ];
+
+        function showTask() {
+            const task = tasks[currentTask];
+            document.getElementById('task-number').textContent = currentTask + 1;
+            
+            document.getElementById('matrix').innerHTML = 
+                task.matrix.map(row => `<div>${row}</div>`).join('');
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            task.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+            
+            document.getElementById('result').textContent = '';
+        }
+
+        function checkAnswer(selectedIndex) {
+            const task = tasks[currentTask];
+            const resultElement = document.getElementById('result');
+            
+            if (selectedIndex === task.correct) {
+                resultElement.textContent = '✅ Правильно!';
+                resultElement.className = 'result correct';
+                score++;
+                document.getElementById('score').textContent = score;
+                
+                setTimeout(() => {
+                    currentTask++;
+                    if (currentTask < tasks.length) {
+                        showTask();
+                    } else {
+                        resultElement.textContent = `🎉 Игра завершена! Правильных ответов: ${score}/${tasks.length}`;
+                        document.getElementById('matrix').innerHTML = '';
+                        document.getElementById('options').innerHTML = '';
+                        
+                        const imageUrl = 'кир.jpg';
+                        const img = document.createElement('img');
+                        img.src = imageUrl;
+                        img.alt = 'Поздравление!';
+                        img.style.maxWidth = '300px';
+                        img.style.marginTop = '5px';
+                        img.style.marginBottom = '10px';
+                        img.style.borderRadius = '10px';
+                        img.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                        
+                        document.getElementById('matrix').appendChild(img);
+                        document.getElementById('restartBtn').style.display = 'block';
+                    }
+                }, 1000);
+            } else {
+                resultElement.textContent = '❌ Неправильно, попробуйте еще, гей.';
+                resultElement.className = 'result incorrect';
+            }
+        }
+
+        function restartGame() {
+            currentTask = 0;
+            score = 0;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('restartBtn').style.display = 'none';
+            document.getElementById('matrix').innerHTML = '';
+            document.getElementById('result').textContent = '';
+            showTask();
+        }
+
+        function backToMainMenu() {
+            // ↓↓↓ ВСТАВЬ ССЫЛКУ НА ГЛАВНОЕ МЕНЮ ЗДЕСЬ ↓↓↓
+            window.location.href = 'index.html';
+            // ↑↑↑ ВСТАВЬ ССЫЛКУ НА ГЛАВНОЕ МЕНЮ ЗДЕСЬ ↑↑↑
+        }
+
+        window.onload = function() {
+            showTask();
+        };
+    </script>
+</body>
+</html>
